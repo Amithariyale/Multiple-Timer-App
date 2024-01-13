@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./favicons/icons8-clock-dotted-120.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <title>Multiple Timer App</title>
 </head>
@@ -16,18 +17,11 @@
         <form id="set_timer_container">
             <p>Set Time :</p>
             <div id="timer">
-                <div>
-                    <label for="hours">Hours :</label>
-                    <input type="number" name="hours" id="hours" placeholder="0" value="0" min="0">
-                </div>
-                <div>
-                    <label for="minutes">Minutes :</label>
-                    <input type="number" name="minutes" id="minutes" placeholder="0" value="0" min="0" max="60">
-                </div>
-                <div>
-                    <label for="seconds">Seconds :</label>
-                    <input type="number" name="seconds" id="seconds" placeholder="0" value="0" min="0" max="60">
-                </div>
+                <input type="number" name="hours" id="hours" placeholder="hh" min="0">
+                :
+                <input type="number" name="minutes" id="minutes" placeholder="mm" min="0" max="60">
+                :
+                <input type="number" name="seconds" id="seconds" placeholder="ss" min="0" max="60">
             </div>
             <button id="set_timer_btn">set</button>
         </form>

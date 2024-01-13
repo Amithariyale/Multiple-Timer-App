@@ -37,6 +37,7 @@ body {
 #timer {
     display: flex;
     gap: 10px;
+    font-size: 30px;
 }
 
 #timer input {
@@ -46,7 +47,7 @@ body {
     width: 50px;
     outline: none;
     color: white;
-    font-size: 20px;
+    font-size: 21px;
     text-align: center;
 }
 
