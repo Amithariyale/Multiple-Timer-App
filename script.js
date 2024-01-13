@@ -2,38 +2,28 @@ const timerForm = document.getElementById("set_timer_container");
 const timerHead = document.getElementById("timer_container_head");
 const timersContainer = document.getElementById("timers_container");
 
-const timers = {};
+let timers = {}; //timers object to contain multiple timer details
 
-let timerCnt = 0;
+// Function for providing unique id to every timer.
+function generateUniqueId(prefix = "id") {
+  const timestamp = new Date().getTime();
+  return `${prefix}_${timestamp}`;
+}
+
+// Adding event listener to timer form to add new timer.
 timerForm.addEventListener("submit", (e) => {
   e.preventDefault();
   let hours = timerForm.hours.value;
   let minutes = timerForm.minutes.value;
   let seconds = timerForm.seconds.value;
 
-  if (!validateTime(hours, minutes, seconds)) return;
+  if (!validateTime(hours, minutes, seconds)) return; // Validating timer input, if input time is invalid then it will return.
 
   if ((timerHead.style.display = "block")) timerHead.style.display = "none";
 
-  const newTimer = document.createElement("div");
-  newTimer.className = "timer_card";
-  newTimer.id = `timer${timerCnt++}`;
-  newTimer.innerHTML = `<p>Timer Left :</p>
-  <p class="remaining_time">${hours}h : ${minutes}m : ${seconds}s</p>
-  `;
-  const deleteBtn = document.createElement("button");
-  deleteBtn.innerText = "Delete";
-  deleteBtn.className = "stop_btn";
-  deleteBtn.addEventListener("click", () => {
-    newTimer.remove();
-    clearInterval(timers[newTimer.id].intervalId);
-    delete timers[newTimer.id];
-    if (Object.keys(timers).length === 0) timerHead.style.display = "block";
-  });
-
-  newTimer.appendChild(deleteBtn);
-  timersContainer.appendChild(newTimer);
-
+  const id = generateUniqueId();
+  createNewTimer(hours, minutes, seconds, id);
+  //   Creating new object of new timer.
   let newTimerObj = {
     hours: hours,
     minutes: minutes,
@@ -41,32 +31,99 @@ timerForm.addEventListener("submit", (e) => {
     intervalId: null,
   };
 
-  timers[newTimer.id] = newTimerObj;
-  startTimer(newTimer.id);
+  //Adding new timer object to the timers object.
+  timers[id] = newTimerObj;
+
+  localStorage.setItem("timers", JSON.stringify(timers));
+
+  // Starting timer.
+  startTimer(id);
 });
 
+function createNewTimer(hours, minutes, seconds, id) {
+  //   creating new timer card.
+  const newTimer = document.createElement("div");
+  newTimer.className = "timer_card";
+  newTimer.id = id;
+  newTimer.innerHTML = `<p>Timer Left :</p>
+  <p class="remaining_time">${hours}h : ${minutes}m : ${seconds}s</p>
+  `;
+
+  //   Adding delete button to tha timer card for delete the timer.
+  const deleteBtn = document.createElement("button");
+  deleteBtn.innerText = "Delete";
+  deleteBtn.className = "stop_btn";
+
+  //   Adding click event listener to the delete button.
+  deleteBtn.addEventListener("click", () => deleteTimerCard(newTimer));
+
+  //   Appending delete button to the timer .
+  newTimer.appendChild(deleteBtn);
+
+  //   Appending New Timer to the timers container.
+  timersContainer.appendChild(newTimer);
+}
+
+// Function to check whether entered time is in correct format or not.
+function validateTime(h, m, s) {
+  if (h < 0 || m < 0 || m > 60 || s < 0 || s > 60) {
+    alert("Enter valid time"); //If time is not correct then show an alert massage on screen.
+    return false;
+  }
+  return true;
+}
+
+// Function to Stop or delete timer.
+function deleteTimerCard(timer) {
+  timer.remove(); //remove the timer card from the document.
+
+  clearInterval(timers[timer.id].intervalId); //clearing the interval.
+
+  delete timers[timer.id]; //deleting timer data from the timers object.
+  localStorage.setItem("timers", JSON.stringify(timers));
+  if (Object.keys(timers).length === 0) timerHead.style.display = "block"; //If no timer card is present then it will show "You have no timers currently".
+}
+
+// Function to start new timer.
 function startTimer(timerId) {
+  // setting interval for timer.
   timers[timerId].intervalId = setInterval(() => updateTimer(timerId), 1000);
 }
+
+// Function to update timer.
 function updateTimer(timerId) {
   const timer = timers[timerId];
-  timer.seconds--;
-  if (timer.seconds === -1) {
-    timer.seconds = 60;
+  timer.seconds--; //decrement seconds.
+
+  if (timer.hours < 0) {
+    clearInterval(timers[timerId].intervalId);
+    showStopCard(timerId);
+    return;
+  }
+  if (timer.seconds < 0) {
+    //if seconds is less than 0 then set seconds to 59 and decrement minutes.
+    timer.seconds = 59;
     timer.minutes--;
-    if (timer.minutes === -1) {
-      timer.minutes = 60;
+    if (timer.minutes < 0) {
+      // if minutes is less than 0 then set minutes to 59 and decrement hours.
+      timer.minutes = 59;
       timer.hours--;
-      if (timer.hours === -1) {
+      if (timer.hours < 0) {
+        // if hours is less than 0 then time is up and stoping the timer.
+
         clearInterval(timers[timerId].intervalId);
         showStopCard(timerId);
         return;
       }
     }
   }
+
+  localStorage.setItem("timers", JSON.stringify(timers));
+  //Updating timer on display.
   updateTimerDisplay(timerId);
 }
 
+// Function to change the appearance of timer card when it is stopped.
 function showStopCard(timerId) {
   const timer = document.getElementById(`${timerId}`);
   timer.innerHTML = `<h1>Timer Is Up !<h1>`;
@@ -76,19 +133,16 @@ function showStopCard(timerId) {
   const deleteBtn = document.createElement("button");
   deleteBtn.innerText = "Stop";
   deleteBtn.className = "stop_btn";
-  deleteBtn.addEventListener("click", () => {
-    timer.remove();
-    clearInterval(timers[timerId].intervalId);
-    delete timers[timerId];
-    if (Object.keys(timers).length === 0) timerHead.style.display = "block";
-  });
+  deleteBtn.addEventListener("click", () => deleteTimerCard(timer));
 
   timer.appendChild(deleteBtn);
 
+  //   Creating new audio object to play audio.
   const audio = new Audio("alarm.mp3");
   audio.play();
 }
 
+// function to update timer on display.
 function updateTimerDisplay(timerId) {
   const timer = timers[timerId];
   const formattedTime = `${timer.hours}h : ${timer.minutes}m : ${timer.seconds}s`;
@@ -96,10 +150,19 @@ function updateTimerDisplay(timerId) {
   document.querySelector(`#${timerId} .remaining_time`).innerText =
     formattedTime;
 }
-function validateTime(h, m, s) {
-  if (h < 0 || m < 0 || m > 60 || s < 0 || s > 60) {
-    alert("Enter valid time");
-    return false;
+
+//Adding event listener to the document, when it reloads If any timer is going on so that it will continue.
+document.addEventListener("DOMContentLoaded", () => {
+  timers = JSON.parse(localStorage.getItem("timers"));
+
+  if (Object.keys(timers).length) timerHead.style.display = "none";
+  for (let id in timers) {
+    createNewTimer(
+      timers[id].hours,
+      timers[id].minutes,
+      timers[id].seconds,
+      id
+    );
+    startTimer(id);
   }
-  return true;
-}
+});

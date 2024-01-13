@@ -9,35 +9,34 @@
 </head>
 
 <body>
-    <div id="main_container">
+
+    <!-- main container -->
+    <main id="main_container">
         <h1>Multiple Timers App</h1>
         <form id="set_timer_container">
             <p>Set Time :</p>
             <div id="timer">
                 <div>
                     <label for="hours">Hours :</label>
-                    <input type="number" name="hours" id="hours" value="0" min="0">
+                    <input type="number" name="hours" id="hours" placeholder="0" value="0" min="0">
                 </div>
                 <div>
                     <label for="minutes">Minutes :</label>
-                    <input type="number" name="minutes" id="minutes" value="0" min="0" max="60">
+                    <input type="number" name="minutes" id="minutes" placeholder="0" value="0" min="0" max="60">
                 </div>
                 <div>
                     <label for="seconds">Seconds :</label>
-                    <input type="number" name="seconds" id="seconds" value="0" min="0" max="60">
+                    <input type="number" name="seconds" id="seconds" placeholder="0" value="0" min="0" max="60">
                 </div>
             </div>
             <button id="set_timer_btn">set</button>
         </form>
         <div id="current_timers">Current Timers</div>
+        <!-- Timers container -->
         <div id="timers_container">
             <p id="timer_container_head">You have no timers currently!</p>
-            <!-- <div class="stop_card">
-                <h1>Timer Is Up</h1>
-                <button class="stop_btn">Delete</button>
-            </div> -->
         </div>
-    </div>
+    </main>
 
     <script src="script.js"></script>
 </body>
