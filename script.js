@@ -1,6 +1,7 @@
 const timerForm = document.getElementById("set_timer_container");
 const timerHead = document.getElementById("timer_container_head");
 const timersContainer = document.getElementById("timers_container");
+const audio = new Audio("alarm.mp3");
 
 let timers = {}; //timers object to contain multiple timer details
 
@@ -24,7 +25,6 @@ timerForm.addEventListener("submit", (e) => {
   minutes = minutes ? minutes : 0;
   seconds = seconds ? seconds : 0;
 
-  
   if (timerHead.style.display === "block") timerHead.style.display = "none";
 
   const id = generateUniqueId();
@@ -85,7 +85,7 @@ function validateTime(h, m, s) {
 // Function to Stop or delete timer.
 function deleteTimerCard(timer) {
   timer.remove(); //remove the timer card from the document.
-
+  audio.pause(); //Pausing the alarm.
   clearInterval(timers[timer.id].intervalId); //clearing the interval.
 
   delete timers[timer.id]; //deleting timer data from the timers object.
@@ -152,8 +152,7 @@ function showStopCard(timerId) {
 
   timer.appendChild(deleteBtn);
 
-  //   Creating new audio object to play audio.
-  const audio = new Audio("alarm.mp3");
+  //   Playing alarm sound when timer is stopped.
   audio.play();
 }
 
