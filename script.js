@@ -153,16 +153,19 @@ function updateTimerDisplay(timerId) {
 
 //Adding event listener to the document, when it reloads If any timer is going on so that it will continue.
 document.addEventListener("DOMContentLoaded", () => {
-  timers = JSON.parse(localStorage.getItem("timers"));
+  const extractedData = localStorage.getItem("timers");
+  if (extractedData) {
+    timers = JSON.parse(extractedData);
 
-  if (Object.keys(timers).length) timerHead.style.display = "none";
-  for (let id in timers) {
-    createNewTimer(
-      timers[id].hours,
-      timers[id].minutes,
-      timers[id].seconds,
-      id
-    );
-    startTimer(id);
+    if (Object.keys(timers).length) timerHead.style.display = "none";
+    for (let id in timers) {
+      createNewTimer(
+        timers[id].hours,
+        timers[id].minutes,
+        timers[id].seconds,
+        id
+      );
+      startTimer(id);
+    }
   }
 });
